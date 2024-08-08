@@ -1,17 +1,14 @@
-const socket = io(); // Connect to the Socket.io server
-
-// Get the context for the temperature graph
 const tempCtx = document.getElementById('liveGraphTemp').getContext('2d');
 
 const tempData = {
-    labels: [],
+    labels: [], // Initial empty labels
     datasets: [{
         label: 'Temperature',
-        borderColor: 'rgb(64, 224, 208)',
+        borderColor: 'rgb(64, 224, 208)', // Line color
         backgroundColor: 'rgba(64, 224, 208, 0.2)',
-        data: [],
+        data: [], // Initial empty data
         fill: false,
-        tension: 0.1
+        tension: 0.1 // Smooth the line
     }]
 };
 
@@ -25,11 +22,11 @@ const tempConfig = {
                 position: 'bottom',
                 title: {
                     display: true,
-                    text: 'time (s)'
+                    text: 'Time (s)'
                 },
                 ticks: {
                     callback: function(value) {
-                        return (value / 1000).toFixed(0);
+                        return (value / 1000).toFixed(0); // Format X-axis labels as time in seconds
                     }
                 }
             },
@@ -42,7 +39,7 @@ const tempConfig = {
             }
         },
         animation: {
-            duration: 0
+            duration: 0 // Disable animations for live updates
         },
         plugins: {
             title: {
@@ -54,23 +51,3 @@ const tempConfig = {
 };
 
 const tempChart = new Chart(tempCtx, tempConfig);
-
-function updateTempGraph(temperature) {
-    const now = Date.now();
-    const label = now;
-
-    if (tempData.labels.length >= 50) {
-        tempData.labels.shift();
-        tempData.datasets[0].data.shift();
-    }
-
-    tempData.labels.push(label);
-    tempData.datasets[0].data.push({ x: label, y: temperature });
-
-    tempChart.update();
-}
-
-socket.on('temperature-data', function(temperature) {
-    console.log('Temperature received:', temperature);
-    updateTempGraph(temperature);
-});

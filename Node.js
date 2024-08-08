@@ -14,7 +14,7 @@ const io = socketIo(server);
 app.use(express.static(path.join(__dirname, 'public/liveGraph')));
 
 // Setup serial port
-const port = new SerialPort('COM6 (USB-SERIAL CH340)', { baudRate: 9600 }); // Update port name to COM6
+const port = new SerialPort('COM6', { baudRate: 9600 }); // Update port name to COM6
 const parser = port.pipe(new Readline({ delimiter: '\n' }));
 
 // On serial data received
@@ -26,14 +26,7 @@ parser.on('data', data => {
     if (temperatureMatch) {
         const temperature = temperatureMatch[1]; // Extracted temperature value
         io.emit('temperature-data', temperature); // Send temperature to all connected clients
-    } else {
-        console.error('Temperature data format is incorrect:', data);
     }
-});
-
-// Handle errors with the serial port
-port.on('error', err => {
-    console.error('Serial port error:', err.message);
 });
 
 // Start server
