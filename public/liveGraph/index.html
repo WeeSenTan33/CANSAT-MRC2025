@@ -53,32 +53,16 @@
 <body>
     <div id="header"></div>
     <div id="status">
-        <p>Status: On-flight</p>
-        <p>Latitude: 38.2323°</p>
-        <p>Longitude: 24.067°</p>
-        <p>Temperature: 28.04°C</p>
-        <p>Height: 706m</p>
-        <p>Pressure: 973hPa</p>
+        <p id="temperature">Temperature: N/A</p>
+        <p id="pressure">Pressure: N/A</p>
+        <p id="altitude">Altitude: N/A</p>
     </div>
     <div class="graphs">
-        <div class="graph-container">
-            <div class="graph-title">Barometric Pressure</div>
-            <canvas id="liveGraphPressure"></canvas>
-        </div>
-        <div class="graph-container">
-            <div class="graph-title">Height</div>
-            <canvas id="liveGraphAltitude"></canvas>
-        </div>
         <div class="graph-container">
             <div class="graph-title">Temperature</div>
             <canvas id="liveGraphTemp"></canvas>
         </div>
-        <div class="graph-container">
-            <div class="graph-title">Velocity</div>
-            <canvas id="liveGraphVelocity"></canvas>
-        </div>
-            <div id="descentGraph"></div>
-        </div>
+        <div id="descentGraph"></div>
     </div>
 
     <!-- Include Plotly.js -->
@@ -86,107 +70,7 @@
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Include the JavaScript files -->
-    <script src="descentGraph.js"></script>
     <script src="TempliveGraph.js"></script>
-    <script src="PressureLiveGraph.js"></script>
-    <script src="AltitudeLiveGraph.js"></script>
-    <script src="VelocityLiveGraph.js"></script>
-    <script>
-        // Function to generate linearly correlated data for the descent of a satellite
-        function generateDescentData(points = 100) {
-            const data = {
-                x: [],
-                y: [],
-                z: []
-            };
-
-            let x = 0, y = 0, z = 0;
-
-            for (let i = 0; i < points; i++) {
-                x += Math.random() * 10; // Increment X values
-                y += Math.random() * 10; // Increment Y values
-                z += Math.random() * 10; // Increment Z values
-
-                data.x.push(x); // Linearly correlated X values
-                data.y.push(y); // Linearly correlated Y values
-                data.z.push(z); // Linearly correlated Z values
-            }
-
-            return data;
-        }
-
-        // Generate initial descent data
-        const descentData = generateDescentData();
-
-        // Plot the 3D line graph
-        Plotly.newPlot('descentGraph', [{
-            x: descentData.x,
-            y: descentData.y,
-            z: descentData.z,
-            mode: 'lines',
-            line: {
-                width: 2,
-                color: 'rgb(255, 99, 132)' // Fixed color for the line
-            },
-            type: 'scatter3d'
-        }], {
-            title: 'Descent Path',
-            scene: {
-                xaxis: { title: 'X Axis' },
-                yaxis: { title: 'Y Axis' },
-                zaxis: { title: 'Z Axis' }
-            }
-        });
-
-        // Function to update the 3D line graph with new data
-        function updateDescentGraph() {
-            const newDescentData = generateDescentData();
-
-            Plotly.update('descentGraph', {
-                x: [newDescentData.x],
-                y: [newDescentData.y],
-                z: [newDescentData.z]
-            });
-        }
-
-        // Update the graph every second
-        setInterval(updateDescentGraph, 1000);
-
-        // Generate and update live graphs
-        const tempCtx = document.getElementById('liveGraphTemp').getContext('2d');
-        const pressureCtx = document.getElementById('liveGraphPressure').getContext('2d');
-        const altitudeCtx = document.getElementById('liveGraphAltitude').getContext('2d');
-        const velocityCtx = document.getElementById('liveGraphVelocity').getContext('2d');
-
-        const tempData = { /* ... */ };
-        const pressureData = { /* ... */ };
-        const altitudeData = { /* ... */ };
-        const velocityData = { /* ... */ };
-
-        const tempConfig = { /* ... */ };
-        const pressureConfig = { /* ... */ };
-        const altitudeConfig = { /* ... */ };
-        const velocityConfig = { /* ... */ };
-
-        const tempChart = new Chart(tempCtx, tempConfig);
-        const pressureChart = new Chart(pressureCtx, pressureConfig);
-        const altitudeChart = new Chart(altitudeCtx, altitudeConfig);
-        const velocityChart = new Chart(velocityCtx, velocityConfig);
-
-        function generateRandomTempData(prevValue) { /* ... */ }
-        function generateRandomPressureData(prevValue) { /* ... */ }
-        function generateRandomAltitudeData(prevValue) { /* ... */ }
-        function generateRandomVelocityData(prevValue) { /* ... */ }
-
-        function updateTempGraph() { /* ... */ }
-        function updatePressureGraph() { /* ... */ }
-        function updateAltitudeGraph() { /* ... */ }
-        function updateVelocityGraph() { /* ... */ }
-
-        setInterval(updateTempGraph, 1000);
-        setInterval(updatePressureGraph, 1000);
-        setInterval(updateAltitudeGraph, 1000);
-        setInterval(updateVelocityGraph, 1000);
-    </script>
+    <script src="descentGraph.js"></script>
 </body>
 </html>

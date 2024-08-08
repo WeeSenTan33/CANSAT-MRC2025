@@ -1,14 +1,17 @@
+const socket = io(); // Connect to the Socket.io server
+
+// Get the context for the temperature graph
 const tempCtx = document.getElementById('liveGraphTemp').getContext('2d');
 
 const tempData = {
-    labels: [], // Initial empty labels
+    labels: [],
     datasets: [{
         label: 'Temperature',
-        borderColor: 'rgb(64, 224, 208)', // Red color for the line
+        borderColor: 'rgb(64, 224, 208)',
         backgroundColor: 'rgba(64, 224, 208, 0.2)',
-        data: [], // Initial empty data
+        data: [],
         fill: false,
-        tension: 0.1 // Smooth the line
+        tension: 0.1
     }]
 };
 
@@ -26,7 +29,7 @@ const tempConfig = {
                 },
                 ticks: {
                     callback: function(value) {
-                        return (value / 1000).toFixed(0); // Format X-axis labels as time in seconds
+                        return (value / 1000).toFixed(0);
                     }
                 }
             },
@@ -39,7 +42,7 @@ const tempConfig = {
             }
         },
         animation: {
-            duration: 0 // Disable animations for live updates
+            duration: 0
         },
         plugins: {
             title: {
@@ -52,29 +55,22 @@ const tempConfig = {
 
 const tempChart = new Chart(tempCtx, tempConfig);
 
-// Function to generate random increasing temperature data for demonstration
-function generateRandomTempData(prevValue) {
-    const fluctuation = Math.random() * 0.2 - 0.1; // Small random fluctuation
-    return (prevValue || 27) + fluctuation; // Start around 27°C and fluctuate
-}
-
-// Function to update the graph with new data
-function updateTempGraph() {
+function updateTempGraph(temperature) {
     const now = Date.now();
     const label = now;
-    const prevValue = tempData.datasets[0].data.length ? tempData.datasets[0].data[tempData.datasets[0].data.length - 1].y : 27;
-    const value = generateRandomTempData(prevValue);
 
     if (tempData.labels.length >= 50) {
-        tempData.labels.shift(); // Remove the first label
-        tempData.datasets[0].data.shift(); // Remove the first data point
+        tempData.labels.shift();
+        tempData.datasets[0].data.shift();
     }
 
     tempData.labels.push(label);
-    tempData.datasets[0].data.push({ x: label, y: value });
+    tempData.datasets[0].data.push({ x: label, y: temperature });
 
     tempChart.update();
 }
 
-// Update the graph every second
-setInterval(updateTempGraph, 1000);
+socket.on('temperature-data', function(temperature) {
+    console.log('Temperature received:', temperature);
+    updateTempGraph(temperature);
+});
