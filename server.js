@@ -1,38 +1,32 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-const { SerialPort } = require('serialport'); // Correct way to import SerialPort in version 12.0.0
-const { ReadlineParser } = require('@serialport/parser-readline'); // Correct way to import ReadlineParser
-const path = require('path');
+const SerialPort = require('serialport');
+const Readline = require('@serialport/parser-readline');
 
-// Setup the server
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Serve static files from 'public/liveGraph' directory
-app.use(express.static(path.join(__dirname, 'public/liveGraph')));
+const port = new SerialPort('COM6', { baudRate: 9600 });
+const parser = port.pipe(new Readline({ delimiter: '\n' }));
 
-// Setup serial port
-const port = new SerialPort({
-    path: 'COM6', // Update port name to COM6
-    baudRate: 9600
-});
-const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
+// Serve static files (HTML, JS, CSS)
+app.use(express.static('public'));
 
-// On serial data received
-parser.on('data', data => {
-    console.log('Received:', data);
-
-    // Extract temperature value from the incoming data
-    const temperatureMatch = data.match(/Temperature\s*=\s*([\d.]+)\s*°C/);
-    if (temperatureMatch) {
-        const temperature = temperatureMatch[1]; // Extracted temperature value
-        io.emit('temperature-data', temperature); // Send temperature to all connected clients
-    }
+// Emit data to the client
+parser.on('data', (data) => {
+    const parsedData = parseSerialData(data);
+    io.emit('serialData', parsedData);
 });
 
-// Start server
-server.listen(5500, () => {
-    console.log('Server is running on http://127.0.0.1:5500');
+// Parse the incoming serial data
+function parseSerialData(data) {
+    const [temp, pressure, alt, lat, long, sat, alt2, speed, date] = data.trim().split(',');
+    return { temp, pressure, alt, lat, long, sat, alt2, speed, date };
+}
+
+// Listen on port 3000
+server.listen(3000, () => {
+    console.log('Server is listening on port 3000');
 });

@@ -3,24 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Graphs</title>
+    <title>Live Graphs with Google Earth</title>
     <style>
-        /* Your existing CSS here */
+        body {
+            position: relative;
+            height: 100vh;
+            background-color: #bcb7b7;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #header {
+            width: 100%;
+            height: 150px;
+            background-image: url('path/to/header-image.png'); /* Update with correct image path */
+            background-size: cover;
+            background-position: center;
+        }
+        #status {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        .graphs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .graph-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid black; 
+            padding: 10px;
+            background: white;
+            width: 300px;
+            height: 300px;
+        }
+        .graph-title {
+            margin-bottom: 10px;
+        }
+        #descentGraph {
+            width: 600px; 
+            height: 600px;
+        }
+        #googleEarthContainer {
+            width: 600px;
+            height: 600px;
+        }
+        .side-by-side {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1300px; /* Adjust this value as needed */
+        }
     </style>
+    <!-- Include the Google Earth API library with your API key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFlntHbx9kufQHz-R4w9mNwp0XbU8cW4A"></script>
 </head>
 <body>
     <div id="header"></div>
     <div id="status">
-        <p id="temperature">Temperature: N/A</p>
-        <p id="pressure">Pressure: N/A</p>
-        <p id="altitude">Altitude: N/A</p>
+        <p>Status: On-flight</p>
+        <p>Latitude: 38.2323°</p>
+        <p>Longitude: 24.067°</p>
+        <p>Temperature: 28.04°C</p>
+        <p>Height: 706m</p>
+        <p>Pressure: 973hPa</p>
     </div>
     <div class="graphs">
+        <div class="graph-container">
+            <div class="graph-title">Barometric Pressure</div>
+            <canvas id="liveGraphPressure"></canvas>
+        </div>
+        <div class="graph-container">
+            <div class="graph-title">Height</div>
+            <canvas id="liveGraphAltitude"></canvas>
+        </div>
         <div class="graph-container">
             <div class="graph-title">Temperature</div>
             <canvas id="liveGraphTemp"></canvas>
         </div>
+        <div class="graph-container">
+            <div class="graph-title">Velocity</div>
+            <canvas id="liveGraphVelocity"></canvas>
+        </div>
+    </div>
+
+    <!-- Descent Graph and Google Earth side by side -->
+    <div class="side-by-side">
         <div id="descentGraph"></div>
+        <div id="googleEarthContainer"></div>
     </div>
 
     <!-- Include Plotly.js -->
@@ -28,8 +102,12 @@
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Include the JavaScript files -->
-    <script src="temperature.js"></script>
-    <script src="TempliveGraph.js"></script>
     <script src="descentGraph.js"></script>
+    <script src="TempliveGraph.js"></script>
+    <script src="PressureLiveGraph.js"></script>
+    <script src="AltitudeLiveGraph.js"></script>
+    <script src="VelocityLiveGraph.js"></script>
+    <!-- Include the Google Earth initialization script -->
+    <script src="googleEarth.js"></script>
 </body>
 </html>
