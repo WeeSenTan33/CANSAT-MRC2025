@@ -1,19 +1,20 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-const SerialPort = require('serialport');
-const Readline = require('@serialport/parser-readline');
+const { SerialPort } = require('serialport'); // Destructure SerialPort from 'serialport'
+const { ReadlineParser } = require('@serialport/parser-readline'); // Import ReadlineParser as a function
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
 // Set up SerialPort with proper initialization
-const port = new SerialPort('COM10', {
+const port = new SerialPort({
+    path: 'COM10', // Update the COM port if needed
     baudRate: 9600
 });
 
-const parser = port.pipe(new Readline({ delimiter: '\r\n' }));
+const parser = port.pipe(new ReadlineParser({ delimiter: '\r\n' }));
 
 parser.on('data', (data) => {
     console.log('Received data:', data);
