@@ -78,11 +78,19 @@ const createDescentGraph = () => {
 
 createDescentGraph();
 
-// Function to update all graphs with new data
+// Function to update all graphs and status display with new data
 function updateGraphs(data) {
     const now = Date.now();
     const { temp, altitude, pressure, velocity, latitude, longitude } = data;
 
+    // Update the status display
+    document.getElementById('status-latitude').textContent = `Latitude: ${latitude}°`;
+    document.getElementById('status-longitude').textContent = `Longitude: ${longitude}°`;
+    document.getElementById('status-temperature').textContent = `Temperature: ${temp}°C`;
+    document.getElementById('status-height').textContent = `Height: ${altitude}m`;
+    document.getElementById('status-pressure').textContent = `Pressure: ${pressure}hPa`;
+
+    // Update the charts
     if (tempChart.data.labels.length >= 50) {
         tempChart.data.labels.shift();
         tempChart.data.datasets[0].data.shift();
