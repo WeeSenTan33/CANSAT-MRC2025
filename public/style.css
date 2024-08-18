@@ -4,8 +4,9 @@ body {
     display: flex; 
     justify-content: center; 
     align-items: center; 
-    height: 100vh; 
-    background-color: #593387a3; 
+    height:100vh;  /* Full height of the viewport */
+    width: 100vw;   /* Full width of the viewport */
+    background-color: #350b76a3; 
 } 
 .header{
     margin: 0;
@@ -13,9 +14,9 @@ body {
     position: absolute; 
     top: 0;
     left: 0;
-    height: 10%;
-    width:100%;
-    background-color: rgb(152, 101, 0);
+    height: 100%;
+    width:10%;
+    background-color: rgb(164, 143, 100);
     overflow: hidden;
     font-size: 7vmin;
     font-family: "comic sans";
