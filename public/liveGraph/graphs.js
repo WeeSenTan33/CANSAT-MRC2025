@@ -1,4 +1,5 @@
-const socket = io(); // Establish WebSocket connection
+// Establish WebSocket connection
+const socket = io();
 
 // Function to create Chart.js graphs with fixed size and scrollable feature
 const createChart = (ctx, label, yAxisLabel) => {
@@ -58,7 +59,7 @@ const altitudeChart = createChart(document.getElementById('liveGraphAltitude').g
 const pressureChart = createChart(document.getElementById('liveGraphPressure').getContext('2d'), 'Pressure', 'hPa');
 const velocityChart = createChart(document.getElementById('liveGraphVelocity').getContext('2d'), 'Velocity', 'km/h');
 
-// Function to create the descent path 3D graph using Plotly.js
+// Create the descent path 3D graph using Plotly.js
 const createDescentGraph = () => {
     const layout = {
         width: 600,
@@ -90,6 +91,40 @@ const createDescentGraph = () => {
 };
 
 createDescentGraph();
+
+// Create the gyroscope visualization using Three.js
+const createGyroVisualization = () => {
+    // Set up the scene, camera, and renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, 600 / 600, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gyroCanvas') });
+    renderer.setSize(600, 600);
+
+    // Create a cylinder geometry
+    const geometry = new THREE.CylinderGeometry(1, 1, 2, 32);
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const cylinder = new THREE.Mesh(geometry, material);
+    scene.add(cylinder);
+
+    // Position the camera
+    camera.position.z = 5;
+
+    // Render loop
+    const animate = function () {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+    };
+    animate();
+
+    // Function to update cylinder rotation based on gyroscope data
+    return (gx, gy, gz) => {
+        cylinder.rotation.x = gx; // gx represents rotation around x-axis
+        cylinder.rotation.y = gy; // gy represents rotation around y-axis
+        cylinder.rotation.z = gz; // gz represents rotation around z-axis
+    };
+};
+
+const updateGyro = createGyroVisualization();
 
 // Helper function to update the y-axis range of a chart
 const updateYAxisRange = (chart, newValue) => {
@@ -155,6 +190,9 @@ function updateGraphs(data) {
     } else {
         console.error('Descent graph not found.');
     }
+
+    // Update gyroscope visualization
+    updateGyro(gx, gy, gz);
 
     // Update Google Maps
     updateMap(latitude, longitude);
