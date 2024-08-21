@@ -4,33 +4,51 @@ body {
     display: flex; 
     justify-content: center; 
     align-items: center; 
-    height:100vh;  /* Full height of the viewport */
+    height: 100vh;  /* Full height of the viewport */
     width: 100vw;   /* Full width of the viewport */
-    background-color: #350b76a3; 
-} 
-.header{
+    background-color: #350b76a3;
+    background-image: url('assets/spacebackground1.png');  /* Background image from your project */
+    background-size: cover;  /* Ensures the image covers the entire background */
+    background-position: center;  /* Centers the background image */
+    background-repeat: no-repeat;  /* Prevents the image from repeating */
+}
+
+.header {
     margin: 0;
     padding: 0;
     position: absolute; 
     top: 0;
     left: 0;
     height: 100%;
-    width:10%;
-    background-color: rgb(164, 143, 100);
+    width: 0%;
+    background-color: rgb(46, 4, 52);
     overflow: hidden;
     font-size: 7vmin;
     font-family: "comic sans";
-    color:#fff;
+    color: #fff;
     text-align: center;
 }
 
-/*
-canvas {
-    width: 100%;
-    height: 100%;
-
 #game-container { 
-    width: 800px; 
-    height: 600px; 
-    border: 2px solid #fff; 
-}  remember this code
+    width: 100%; 
+    height: 100%; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    flex-direction: column;
+    text-align: center;
+    color: #FFFFFF;
+    font-family: 'Dancing Script', cursive;
+}
+
+.welcome-text {
+    font-size: 43px;
+    margin-bottom: 20px;
+}
+
+.intro-text {
+    font-size: 32px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}

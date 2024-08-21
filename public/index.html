@@ -1,18 +1,24 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Cansat</title>
-	<link href="style.css" rel="stylesheet"/>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
-</head>
 <body>
-	<!--<div class="header">
-		<header>Cansat</header>
-	</div> -->
-	<!--<script src="bundle.js"></script>-->
-    <script type="module" src="main.js"></script>
-	<div id="game-container"></div>
-	
+    <div class="header">
+        <!-- Optional header content -->
+		<link href="style.css" rel="stylesheet"/>
+    </div>
 
+    <div id="game-container">
+        <div class="welcome-text">Welcome Ladies and Gentlemen</div>
+        <div class="intro-text" onclick="startGame()">Click to Start</div>
+    </div>
+
+    <script>
+        function startGame() {
+            const introText = document.querySelector('.intro-text');
+            introText.style.opacity = '0';
+            setTimeout(() => {
+                window.location.href = 'liveGraph/index.html';
+            }, 300); // Match the duration of the transition in the CSS
+        }
+    </script>
 </body>
-</html>.
+
+
+<link href="style.css" rel="stylesheet"/>
