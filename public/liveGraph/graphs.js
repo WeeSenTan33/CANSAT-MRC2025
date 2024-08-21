@@ -1,6 +1,6 @@
 const socket = io(); // Establish WebSocket connection
 
-// Function to create Chart.js graphs with a fixed size and scrollable feature
+// Function to create Chart.js graphs with fixed size and scrollable feature
 const createChart = (ctx, label, yAxisLabel) => {
     return new Chart(ctx, {
         type: 'line',
@@ -67,15 +67,15 @@ const createDescentGraph = () => {
         scene: {
             xaxis: { 
                 title: 'gx (rad/s)',
-                range: [0, 100] // Initial range for gx axis
+                range: [-2, 2] // Initial range for gx axis
             },
             yaxis: { 
                 title: 'gy (rad/s)',
-                range: [0, 100] // Initial range for gy axis
+                range: [-2, 2] // Initial range for gy axis
             },
             zaxis: { 
                 title: 'gz (rad/s)',
-                range: [0, 100] // Initial range for gz axis
+                range: [-2, 2] // Initial range for gz axis
             }
         }
     };
@@ -91,6 +91,16 @@ const createDescentGraph = () => {
 
 createDescentGraph();
 
+// Helper function to update the y-axis range of a chart
+const updateYAxisRange = (chart, newValue) => {
+    const dataValues = chart.data.datasets[0].data.map(d => d.y);
+    const min = Math.min(...dataValues, newValue) - 10;
+    const max = Math.max(...dataValues, newValue) + 10;
+    chart.options.scales.y.min = min;
+    chart.options.scales.y.max = max;
+    chart.update();
+};
+
 // Function to update all graphs and status display with new data
 function updateGraphs(data) {
     const now = Date.now();
@@ -105,15 +115,6 @@ function updateGraphs(data) {
     document.getElementById('status-temperature').textContent = `Temperature: ${temp}°C`;
     document.getElementById('status-height').textContent = `Height: ${altitude}m`;
     document.getElementById('status-pressure').textContent = `Pressure: ${pressure}hPa`;
-
-    // Helper function to update the y-axis range of a chart
-    const updateYAxisRange = (chart, newValue) => {
-        const min = Math.min(...chart.data.datasets[0].data.map(d => d.y), newValue) - 10;
-        const max = Math.max(...chart.data.datasets[0].data.map(d => d.y), newValue) + 10;
-        chart.options.scales.y.min = min;
-        chart.options.scales.y.max = max;
-        chart.update();
-    };
 
     // Update the charts
     tempChart.data.labels.push(secondsElapsed);
@@ -142,10 +143,14 @@ function updateGraphs(data) {
         }, [0]);
 
         // Update the range for the descent graph
+        const xRange = [Math.min(...Plotly.Plots.getTraces('descentGraph')[0].x), Math.max(...Plotly.Plots.getTraces('descentGraph')[0].x)];
+        const yRange = [Math.min(...Plotly.Plots.getTraces('descentGraph')[0].y), Math.max(...Plotly.Plots.getTraces('descentGraph')[0].y)];
+        const zRange = [Math.min(...Plotly.Plots.getTraces('descentGraph')[0].z), Math.max(...Plotly.Plots.getTraces('descentGraph')[0].z)];
+
         Plotly.relayout('descentGraph', {
-            'scene.xaxis.range': [Math.min(...Plotly.Axes.get('descentGraph', 'x').range), Math.max(...Plotly.Axes.get('descentGraph', 'x').range)],
-            'scene.yaxis.range': [Math.min(...Plotly.Axes.get('descentGraph', 'y').range), Math.max(...Plotly.Axes.get('descentGraph', 'y').range)],
-            'scene.zaxis.range': [Math.min(...Plotly.Axes.get('descentGraph', 'z').range), Math.max(...Plotly.Axes.get('descentGraph', 'z').range)],
+            'scene.xaxis.range': [xRange[0] - 10, xRange[1] + 10],
+            'scene.yaxis.range': [yRange[0] - 10, yRange[1] + 10],
+            'scene.zaxis.range': [zRange[0] - 10, zRange[1] + 10],
         });
     } else {
         console.error('Descent graph not found.');
