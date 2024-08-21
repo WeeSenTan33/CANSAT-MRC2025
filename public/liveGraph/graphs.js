@@ -58,19 +58,28 @@ const altitudeChart = createChart(document.getElementById('liveGraphAltitude').g
 const pressureChart = createChart(document.getElementById('liveGraphPressure').getContext('2d'), 'Pressure', 'hPa');
 const velocityChart = createChart(document.getElementById('liveGraphVelocity').getContext('2d'), 'Velocity', 'km/h');
 
-// Function to create and update the descent path graph using Plotly.js
+// Function to create the descent path 3D graph using Plotly.js
 const createDescentGraph = () => {
     const layout = {
         width: 600,
         height: 600,
         title: 'Descent Path (gx, gy, gz)',
         scene: {
-            xaxis: { title: 'gx (rad/s)' },
-            yaxis: { title: 'gy (rad/s)' },
-            zaxis: { title: 'gz (rad/s)' }
+            xaxis: { 
+                title: 'gx (rad/s)',
+                range: [0, 100] // Initial range for gx axis
+            },
+            yaxis: { 
+                title: 'gy (rad/s)',
+                range: [0, 100] // Initial range for gy axis
+            },
+            zaxis: { 
+                title: 'gz (rad/s)',
+                range: [0, 100] // Initial range for gz axis
+            }
         }
     };
-    window.Plotly.newPlot('descentGraph', [{
+    Plotly.newPlot('descentGraph', [{
         type: 'scatter3d',
         mode: 'lines',
         line: { color: 'rgb(128, 0, 128)', width: 2 }, // Purple line color
@@ -97,31 +106,47 @@ function updateGraphs(data) {
     document.getElementById('status-height').textContent = `Height: ${altitude}m`;
     document.getElementById('status-pressure').textContent = `Pressure: ${pressure}hPa`;
 
+    // Helper function to update the y-axis range of a chart
+    const updateYAxisRange = (chart, newValue) => {
+        const min = Math.min(...chart.data.datasets[0].data.map(d => d.y), newValue) - 10;
+        const max = Math.max(...chart.data.datasets[0].data.map(d => d.y), newValue) + 10;
+        chart.options.scales.y.min = min;
+        chart.options.scales.y.max = max;
+        chart.update();
+    };
+
     // Update the charts
     tempChart.data.labels.push(secondsElapsed);
     tempChart.data.datasets[0].data.push({ x: secondsElapsed, y: temp });
-    tempChart.update();
+    updateYAxisRange(tempChart, temp);
 
     altitudeChart.data.labels.push(secondsElapsed);
     altitudeChart.data.datasets[0].data.push({ x: secondsElapsed, y: altitude });
-    altitudeChart.update();
+    updateYAxisRange(altitudeChart, altitude);
 
     pressureChart.data.labels.push(secondsElapsed);
     pressureChart.data.datasets[0].data.push({ x: secondsElapsed, y: pressure });
-    pressureChart.update();
+    updateYAxisRange(pressureChart, pressure);
 
     velocityChart.data.labels.push(secondsElapsed);
     velocityChart.data.datasets[0].data.push({ x: secondsElapsed, y: velocity });
-    velocityChart.update();
+    updateYAxisRange(velocityChart, velocity);
 
     // Update descent graph with gx, gy, and gz data
-    const descentGraph = window.Plotly.getPlot('descentGraph');
+    const descentGraph = document.getElementById('descentGraph');
     if (descentGraph) {
-        const descentData = descentGraph.data[0];
-        descentData.x.push(gx);
-        descentData.y.push(gy);
-        descentData.z.push(gz);
-        window.Plotly.update('descentGraph', { x: [descentData.x], y: [descentData.y], z: [descentData.z] });
+        Plotly.extendTraces('descentGraph', {
+            x: [[gx]],
+            y: [[gy]],
+            z: [[gz]]
+        }, [0]);
+
+        // Update the range for the descent graph
+        Plotly.relayout('descentGraph', {
+            'scene.xaxis.range': [Math.min(...Plotly.Axes.get('descentGraph', 'x').range), Math.max(...Plotly.Axes.get('descentGraph', 'x').range)],
+            'scene.yaxis.range': [Math.min(...Plotly.Axes.get('descentGraph', 'y').range), Math.max(...Plotly.Axes.get('descentGraph', 'y').range)],
+            'scene.zaxis.range': [Math.min(...Plotly.Axes.get('descentGraph', 'z').range), Math.max(...Plotly.Axes.get('descentGraph', 'z').range)],
+        });
     } else {
         console.error('Descent graph not found.');
     }
