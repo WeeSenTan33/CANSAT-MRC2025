@@ -1,11 +1,7 @@
 const socket = io(); // Establish WebSocket connection
 
-// Function to create Chart.js graphs with a fixed size
+// Function to create Chart.js graphs with a fixed size and scrollable feature
 const createChart = (ctx, label, yAxisLabel) => {
-    // Set the fixed dimensions for the canvas
-    ctx.canvas.width = 900; // Increased width in pixels
-    ctx.canvas.height = 900; // Increased height in pixels
-
     return new Chart(ctx, {
         type: 'line',
         data: {
@@ -56,6 +52,7 @@ const createChart = (ctx, label, yAxisLabel) => {
     });
 };
 
+// Create charts
 const tempChart = createChart(document.getElementById('liveGraphTemp').getContext('2d'), 'Temperature', '°C');
 const altitudeChart = createChart(document.getElementById('liveGraphAltitude').getContext('2d'), 'Altitude', 'm');
 const pressureChart = createChart(document.getElementById('liveGraphPressure').getContext('2d'), 'Pressure', 'hPa');
@@ -64,8 +61,8 @@ const velocityChart = createChart(document.getElementById('liveGraphVelocity').g
 // Function to create and update the descent path graph using Plotly.js
 const createDescentGraph = () => {
     const layout = {
-        width: 600,  // Keep original width in pixels
-        height: 600, // Increased height in pixels
+        width: 600,
+        height: 600,
         title: 'Descent Path (gx, gy, gz)',
         scene: {
             xaxis: { title: 'gx (rad/s)' },
@@ -77,9 +74,9 @@ const createDescentGraph = () => {
         type: 'scatter3d',
         mode: 'lines',
         line: { color: 'rgb(128, 0, 128)', width: 2 }, // Purple line color
-        x: [],
-        y: [],
-        z: []
+        x: [], // gx values
+        y: [], // gy values
+        z: []  // gz values
     }], layout);
 };
 
@@ -91,7 +88,7 @@ function updateGraphs(data) {
     const { temp, altitude, pressure, latitude, longitude, velocity, gx, gy, gz } = data;
 
     // Convert timestamp to seconds
-    const secondsElapsed = Math.floor(now / 1000); // Round to nearest second
+    const secondsElapsed = Math.floor(now / 1000);
 
     // Update the status display
     document.getElementById('status-latitude').textContent = `Latitude: ${latitude}°`;
@@ -101,17 +98,6 @@ function updateGraphs(data) {
     document.getElementById('status-pressure').textContent = `Pressure: ${pressure}hPa`;
 
     // Update the charts
-    if (tempChart.data.labels.length >= 50) {
-        tempChart.data.labels.shift();
-        tempChart.data.datasets[0].data.shift();
-        altitudeChart.data.labels.shift();
-        altitudeChart.data.datasets[0].data.shift();
-        pressureChart.data.labels.shift();
-        pressureChart.data.datasets[0].data.shift();
-        velocityChart.data.labels.shift();
-        velocityChart.data.datasets[0].data.shift();
-    }
-
     tempChart.data.labels.push(secondsElapsed);
     tempChart.data.datasets[0].data.push({ x: secondsElapsed, y: temp });
     tempChart.update();
@@ -130,16 +116,15 @@ function updateGraphs(data) {
 
     // Update descent graph with gx, gy, and gz data
     const descentGraph = window.Plotly.getPlot('descentGraph');
-    const descentData = descentGraph.data[0];
-    if (descentData.x.length >= 50) {
-        descentData.x.shift();
-        descentData.y.shift();
-        descentData.z.shift();
+    if (descentGraph) {
+        const descentData = descentGraph.data[0];
+        descentData.x.push(gx);
+        descentData.y.push(gy);
+        descentData.z.push(gz);
+        window.Plotly.update('descentGraph', { x: [descentData.x], y: [descentData.y], z: [descentData.z] });
+    } else {
+        console.error('Descent graph not found.');
     }
-    descentData.x.push(gx);
-    descentData.y.push(gy);
-    descentData.z.push(gz);
-    window.Plotly.update('descentGraph', { x: [descentData.x], y: [descentData.y], z: [descentData.z] });
 
     // Update Google Maps
     updateMap(latitude, longitude);

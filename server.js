@@ -24,9 +24,33 @@ parser.on('data', (data) => {
 
 // Example function to parse data from serial port
 function parseSerialData(data) {
-    // Implement your parsing logic here
-    const [temp, pressure, altitude, latitude, longitude, , , velocity] = data.split(',');
-    return { temp, pressure, altitude, latitude, longitude, velocity };
+    // Split data based on commas
+    const [
+        packetCount, date, time, temp, pressure, altitude, latitude, longitude, satellites,
+        ax, ay, az, gx, gy, gz, mx, my, mz
+    ] = data.split(',');
+
+    // Return structured data
+    return {
+        packetCount,
+        date,
+        time,
+        temp,
+        pressure,
+        altitude,
+        latitude,
+        longitude,
+        satellites,
+        ax,
+        ay,
+        az,
+        gx,
+        gy,
+        gz,
+        mx,
+        my,
+        mz
+    };
 }
 
 // Serve static files from 'public' directory

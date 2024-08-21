@@ -27,29 +27,39 @@
         #status {
             margin: 20px 0;
             font-size: 18px;
+            color: white;
         }
         .graphs {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             gap: 20px;
             flex-wrap: wrap;
         }
         .graph-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 1px solid black; 
-            padding: 10px;
-            background: rgb(255, 255, 255);
-            width: 300px;
-            height: 300px;
-        }
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 1px solid black; 
+        padding: 10px;
+        background: rgb(255, 255, 255);
+        width: 900px; /* Width of the container */
+        height: 400px; /* Height of the container */
+        overflow-x: auto; /* Allow horizontal scrolling */
+        overflow-y: hidden; /* Hide vertical scrolling */
+        position: relative; /* Position relative to control scrollbar */
+    }
+    canvas {
+        width: 2000px; /* Larger width than container to enable scrolling */
+        height: 100%; /* Adjust height if needed */
+    }
         .graph-title {
             margin-bottom: 10px;
         }
         #descentGraph {
             width: 600px; 
             height: 600px;
+            margin-top: 20px;
         }
         #map {
             width: 600px;
@@ -91,7 +101,9 @@
             <div class="graph-title">Velocity</div>
             <canvas id="liveGraphVelocity"></canvas>
         </div>
+        <!-- Descent Graph container -->
         <div id="descentGraph"></div>
+        <!-- Map container -->
         <div id="map"></div>
     </div>
 
