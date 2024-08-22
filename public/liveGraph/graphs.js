@@ -1,4 +1,4 @@
-// Establish WebSocket connection
+// Establish WebSocket connection for the serial data
 const socket = io();
 
 // Function to create Chart.js graphs with fixed size and scrollable feature
@@ -198,7 +198,22 @@ function updateGraphs(data) {
     updateMap(latitude, longitude);
 }
 
-// Handle incoming data from the WebSocket connection
+// Handle incoming data from the WebSocket connection for serial data
 socket.on('serialData', function(data) {
     updateGraphs(data);
 });
+
+// WebSocket connection for the gyroscope data from Python server
+const gyroSocket = new WebSocket('ws://localhost:5678');
+
+gyroSocket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    console.log('Gyro Data from Python:', data);
+
+    // Update the gyroscope visualization with received data
+    updateGyro(data.gx, data.gy, data.gz);
+};
+
+gyroSocket.onerror = function(error) {
+    console.error('WebSocket Error:', error);
+};
