@@ -171,7 +171,6 @@ function updateGraphs(data) {
     // Update descent graph with gx, gy, and gz data
     const descentGraph = document.getElementById('descentGraph');
     if (descentGraph) {
-        // Ensure the data is added to the existing trace
         Plotly.extendTraces('descentGraph', {
             x: [[gx]],
             y: [[gy]],
@@ -198,7 +197,6 @@ function updateGraphs(data) {
     // Update Google Maps
     updateMap(latitude, longitude);
 }
-
 
 // Handle incoming data from the WebSocket connection for serial data
 socket.on('serialData', function(data) {
