@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const WebSocket = require('ws');
 const { SerialPort } = require('serialport');
 const { ReadlineParser } = require('@serialport/parser-readline');
 
@@ -16,13 +17,28 @@ const port = new SerialPort({
 
 const parser = port.pipe(new ReadlineParser({ delimiter: '\r\n' }));
 
+// Set up WebSocket server
+const wss = new WebSocket.Server({ port: 5678 });
+
+wss.on('connection', (ws) => {
+    console.log('WebSocket client connected');
+
+    ws.on('message', (message) => {
+        console.log(`Received message from client: ${message}`);
+    });
+
+    ws.on('close', () => {
+        console.log('WebSocket client disconnected');
+    });
+});
+
 parser.on('data', (data) => {
     console.log('Received data:', data);
 
     // Parse the data
     const parsedData = parseSerialData(data);
 
-    // Emit the parsed data to all connected clients via Socket.IO
+    // Emit the parsed data to all connected Socket.IO clients
     io.emit('serialData', parsedData);
 
     // Prepare and emit gyroscope data via WebSocket
@@ -32,7 +48,12 @@ parser.on('data', (data) => {
         gz: parseFloat(parsedData.gz)
     };
 
-    io.emit('gyroData', gyroData);  // Emit gyro data separately
+    // Broadcast gyroscope data to all WebSocket clients
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(gyroData));
+        }
+    });
 });
 
 // Function to parse data from serial port
