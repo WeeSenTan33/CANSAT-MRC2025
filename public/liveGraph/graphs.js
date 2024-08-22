@@ -68,22 +68,22 @@ const createDescentGraph = () => {
         scene: {
             xaxis: { 
                 title: 'gx (rad/s)',
-                range: [-2, 2] // Initial range for gx axis
+                range: [-150, 150] // Initial range for gx axis
             },
             yaxis: { 
                 title: 'gy (rad/s)',
-                range: [-2, 2] // Initial range for gy axis
+                range: [-150, 150] // Initial range for gy axis
             },
             zaxis: { 
                 title: 'gz (rad/s)',
-                range: [-2, 2] // Initial range for gz axis
+                range: [-150, 150] // Initial range for gz axis
             }
         }
     };
     Plotly.newPlot('descentGraph', [{
         type: 'scatter3d',
         mode: 'lines',
-        line: { color: 'rgb(128, 0, 128)', width: 2 }, // Purple line color
+        line: { color: 'rgb(128, 0, 128)', width: 4 }, // Purple line color
         x: [], // gx values
         y: [], // gy values
         z: []  // gz values
