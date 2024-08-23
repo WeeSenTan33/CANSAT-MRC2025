@@ -64,7 +64,7 @@ function parseSerialData(data) {
     ] = data.split(',');
 
     return {
-        packetCount,
+        packet,
         date,
         time,
         temp,
