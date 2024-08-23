@@ -18,7 +18,7 @@ const parser = port.pipe(new ReadlineParser({ delimiter: '\r\n' }));
 parser.on('data', (data) => {
     try {
         // Basic validation to check if data format is correct
-        if (data.split(',').length === 17) {
+        if (data.split(',').length === 18) { // Expecting 18 fields
             const parsedData = parseSerialData(data);
             io.emit('serialData', parsedData);
         } else {
@@ -35,29 +35,29 @@ parser.on('error', (err) => {
 
 function parseSerialData(data) {
     const [
-        packetCount, date, time, temp, pressure, altitude, latitude, longitude, satellites,
-        ax, ay, az, gx, gy, gz, mx, my, mz
+        packet, date, time, temp, pressure, altitude, lat, log, num_satellites,
+        speed, gx, gy, gz, orientation_upward, ax, ay, az, acceleration
     ] = data.split(',');
 
     return {
-        packetCount,
+        packet,
         date,
         time,
         temp: parseFloat(temp),
         pressure: parseFloat(pressure),
         altitude: parseFloat(altitude),
-        latitude: parseFloat(latitude),
-        longitude: parseFloat(longitude),
-        satellites: parseInt(satellites, 10),
-        ax: parseFloat(ax),
-        ay: parseFloat(ay),
-        az: parseFloat(az),
+        lat: parseFloat(lat),
+        log: parseFloat(log),
+        num_satellites: parseInt(num_satellites, 10),
+        speed: parseFloat(speed),
         gx: parseFloat(gx),
         gy: parseFloat(gy),
         gz: parseFloat(gz),
-        mx: parseFloat(mx),
-        my: parseFloat(my),
-        mz: parseFloat(mz)
+        orientation_upward,
+        ax: parseFloat(ax),
+        ay: parseFloat(ay),
+        az: parseFloat(az),
+        acceleration: parseFloat(acceleration)
     };
 }
 

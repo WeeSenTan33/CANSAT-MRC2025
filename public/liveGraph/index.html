@@ -81,6 +81,8 @@
 <body>
     <div id="header"></div>
     <div id="status">
+        <p id="current-date">Date: </p>
+        <p id="current-time">Time: </p>
         <p>Status: On-flight</p>
         <p id="status-latitude">Latitude: 38.2323°</p>
         <p id="status-longitude">Longitude: 24.067°</p>
@@ -123,5 +125,25 @@
 
     <script src="graphs.js"></script>
     <script src="googleMaps.js"></script>
+
+    <script>
+        function updateDateTime() {
+            const dateElement = document.getElementById('current-date');
+            const timeElement = document.getElementById('current-time');
+            
+            const now = new Date();
+            const date = now.toLocaleDateString();
+            const time = now.toLocaleTimeString();
+
+            dateElement.textContent = `Date: ${date}`;
+            timeElement.textContent = `Time: ${time}`;
+        }
+
+        // Update the date and time every second
+        setInterval(updateDateTime, 1000);
+
+        // Initial call to display the date and time immediately
+        updateDateTime();
+    </script>
 </body>
 </html>
