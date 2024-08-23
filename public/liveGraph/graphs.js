@@ -139,17 +139,14 @@ const updateYAxisRange = (chart, newValue) => {
 // Function to update all graphs and status display with new data
 function updateGraphs(data) {
     const now = Date.now();
-    const {
-        temp, altitude, pressure, lat, log, num_satellites, speed,
-        gx, gy, gz, orientation_upward, ax, ay, az, acceleration
-    } = data;
+    const { temp, altitude, pressure, latitude, longitude, velocity, gx, gy, gz } = data;
 
     // Convert timestamp to seconds
     const secondsElapsed = Math.floor(now / 1000);
 
     // Update the status display
-    document.getElementById('status-latitude').textContent = `Latitude: ${lat}°`;
-    document.getElementById('status-longitude').textContent = `Longitude: ${log}°`;
+    document.getElementById('status-latitude').textContent = `Latitude: ${latitude}°`;
+    document.getElementById('status-longitude').textContent = `Longitude: ${longitude}°`;
     document.getElementById('status-temperature').textContent = `Temperature: ${temp}°C`;
     document.getElementById('status-height').textContent = `Height: ${altitude}m`;
     document.getElementById('status-pressure').textContent = `Pressure: ${pressure}hPa`;
@@ -168,8 +165,8 @@ function updateGraphs(data) {
     updateYAxisRange(pressureChart, pressure);
 
     velocityChart.data.labels.push(secondsElapsed);
-    velocityChart.data.datasets[0].data.push({ x: secondsElapsed, y: speed });
-    updateYAxisRange(velocityChart, speed);
+    velocityChart.data.datasets[0].data.push({ x: secondsElapsed, y: velocity });
+    updateYAxisRange(velocityChart, velocity);
 
     // Update descent graph with gx, gy, and gz data
     const descentGraph = document.getElementById('descentGraph');
@@ -198,7 +195,7 @@ function updateGraphs(data) {
     updateGyro(gx, gy, gz);
 
     // Update Google Maps
-    updateMap(lat, log);
+    updateMap(latitude, longitude);
 }
 
 // Handle incoming data from the WebSocket connection for serial data
