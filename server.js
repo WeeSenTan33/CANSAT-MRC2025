@@ -59,7 +59,7 @@ parser.on('data', (data) => {
 // Function to parse data from serial port
 function parseSerialData(data) {
     const [
-        packet, date, time, temp, pressure, altitude, lat, log, numSatellites, speed,
+        packet, date, time, temp, pressure, altitude, latitude, longitude, numSatellites, satellites, speed,
         gx, gy, gz, orientationUpward, ax, ay, az, acceleration
     ] = data.split(',');
 
