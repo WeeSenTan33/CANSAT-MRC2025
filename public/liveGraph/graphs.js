@@ -120,7 +120,7 @@ const createGyroVisualization = () => {
     return (gx, gy, gz) => {
         cylinder.rotation.x = gx; // gx represents rotation around x-axis
         cylinder.rotation.y = gy; // gy represents rotation around y-axis
-        cylinder.rotation.z = gz; // gz represents rotation around z-axis
+        cylinder.rotation.z = gz -0.95; // gz represents rotation around z-axis
     };
 };
 
