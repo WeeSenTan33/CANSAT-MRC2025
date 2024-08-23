@@ -68,15 +68,15 @@ const createDescentGraph = () => {
         scene: {
             xaxis: { 
                 title: 'gx (rad/s)',
-                range: [-70, 70] // Initial range for gx axis
+                range: [-150, 150] // Initial range for gx axis
             },
             yaxis: { 
                 title: 'gy (rad/s)',
-                range: [-70, 70] // Initial range for gy axis
+                range: [-150, 150] // Initial range for gy axis
             },
             zaxis: { 
                 title: 'gz (rad/s)',
-                range: [-70, 70] // Initial range for gz axis
+                range: [-150, 150] // Initial range for gz axis
             }
         }
     };
