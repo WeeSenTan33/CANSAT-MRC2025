@@ -11,7 +11,7 @@ const io = socketIo(server);
 
 // Set up SerialPort to connect to COM10
 const port = new SerialPort({
-    path: 'COM10', 
+    path: 'COM10',
     baudRate: 9600
 });
 
@@ -60,7 +60,7 @@ parser.on('data', (data) => {
 function parseSerialData(data) {
     const [
         packetCount, date, time, temperature, pressure, altitude, latitude, longitude, satellites, 
-        ax, ay, az, gx, gy, gz, mx, my, mz
+        speed, gx, gy, gz, orientationUpward, ax, ay, az, acceleration
     ] = data.split(',');
 
     return {
@@ -73,15 +73,15 @@ function parseSerialData(data) {
         latitude,
         longitude,
         satellites,
-        ax, 
-        ay, 
-        az, 
+        speed,
         gx, 
         gy, 
         gz, 
-        mx, 
-        my, 
-        mz
+        orientationUpward, 
+        ax, 
+        ay, 
+        az, 
+        acceleration
     };
 }
 
