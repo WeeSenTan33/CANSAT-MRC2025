@@ -7,7 +7,7 @@ body {
     height: 100vh;  /* Full height of the viewport */
     width: 100vw;   /* Full width of the viewport */
     background-color: #350b76a3;
-    background-image: url('assets/spacebackground1.png');  /* Background image from your project */
+    background-image: url('assets/spacebackground2.png');  /* Background image from your project */
     background-size: cover;  /* Ensures the image covers the entire background */
     background-position: center;  /* Centers the background image */
     background-repeat: no-repeat;  /* Prevents the image from repeating */
