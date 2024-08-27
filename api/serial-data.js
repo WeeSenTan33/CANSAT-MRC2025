@@ -9,7 +9,7 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 const port = new SerialPort({
-    path: process.env.SERIAL_PORT || '/dev/ttyUSB0', // Use environment variable or default path
+    path: process.env.SERIAL_PORT || 'COM10', // Use environment variable or default to COM10
     baudRate: parseInt(process.env.BAUD_RATE, 10) || 9600 // Use environment variable or default baud rate
 });
 
@@ -35,7 +35,7 @@ parser.on('error', (err) => {
 
 function parseSerialData(data) {
     const [
-        packet, date, time, temp, pressure, altitude, lat, log, num_satellites,
+        hi, packet, date, time, temp, pressure, altitude, lat, log, num_satellites,
         speed, gx, gy, gz, orientation_upward, ax, ay, az, acceleration
     ] = data.split(',');
 
