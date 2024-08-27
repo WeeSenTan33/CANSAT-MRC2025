@@ -127,15 +127,12 @@ const createGyroVisualization = () => {
 const updateGyro = createGyroVisualization();
 
 // Helper function to update the y-axis range of a chart
-const updateYAxisRange = (chart, newValue, minOffset, maxOffset) => {
+const updateYAxisRange = (chart, newValue) => {
     const dataValues = chart.data.datasets[0].data.map(d => d.y);
-    const min = Math.min(...dataValues, newValue);
-    const max = Math.max(...dataValues, newValue);
-    
-    // Adjust range with specified offsets
-    chart.options.scales.y.min = min - minOffset;
-    chart.options.scales.y.max = max + maxOffset;
-    
+    const min = Math.min(...dataValues, newValue) - 10;
+    const max = Math.max(...dataValues, newValue) + 10;
+    chart.options.scales.y.min = min;
+    chart.options.scales.y.max = max;
     chart.update();
 };
 
@@ -157,22 +154,22 @@ function updateGraphs(data) {
     document.getElementById('status-height').textContent = `Height: ${altitude}m`;
     document.getElementById('status-pressure').textContent = `Pressure: ${pressure}hPa`;
 
-    // Update the charts with specific offsets
+    // Update the charts
     tempChart.data.labels.push(secondsElapsed);
     tempChart.data.datasets[0].data.push({ x: secondsElapsed, y: temp });
-    updateYAxisRange(tempChart, temp, 10, 10); // Adjust offsets as needed
+    updateYAxisRange(tempChart, temp);
 
     altitudeChart.data.labels.push(secondsElapsed);
     altitudeChart.data.datasets[0].data.push({ x: secondsElapsed, y: altitude });
-    updateYAxisRange(altitudeChart, altitude, 20, 20); // Adjust offsets as needed
+    updateYAxisRange(altitudeChart, altitude);
 
     pressureChart.data.labels.push(secondsElapsed);
     pressureChart.data.datasets[0].data.push({ x: secondsElapsed, y: pressure });
-    updateYAxisRange(pressureChart, pressure, 200, 200); // Adjust offsets as needed for pressure
+    updateYAxisRange(pressureChart, pressure);
 
     velocityChart.data.labels.push(secondsElapsed);
     velocityChart.data.datasets[0].data.push({ x: secondsElapsed, y: speed });
-    updateYAxisRange(velocityChart, speed, 15, 15); // Adjust offsets as needed
+    updateYAxisRange(velocityChart, speed);
 
     // Update descent graph with gx, gy, and gz data
     const descentGraph = document.getElementById('descentGraph');
@@ -208,8 +205,6 @@ function updateGraphs(data) {
 socket.on('serialData', function(data) {
     updateGraphs(data);
 });
-
-
 
 // WebSocket connection for the gyroscope data from Python server
 const gyroSocket = new WebSocket('ws://localhost:5678');
