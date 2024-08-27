@@ -16,7 +16,7 @@ def update_visualization(data):
     # Here you would update your visualization logic
 
 async def receive_gyro_data():
-    async with websockets.connect("ws://localhost:3000") as websocket:
+    async with websockets.connect("ws://localhost:5678") as websocket:
         try:
             while True:
                 # Receive data from the WebSocket server
