@@ -35,7 +35,7 @@ parser.on('error', (err) => {
 
 function parseSerialData(data) {
     const [
-        packet, date, time, temp, pressure, altitude, lat, log, num_satellites,
+        hi, packet, date, time, temp, pressure, altitude, lat, log, num_satellites,
         speed, gx, gy, gz, orientation_upward, ax, ay, az, acceleration
     ] = data.split(',');
 
