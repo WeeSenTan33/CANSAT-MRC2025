@@ -1,2 +1,2 @@
-# A Satelite Data Collection System
+# CANSAT Data Collection System
 
