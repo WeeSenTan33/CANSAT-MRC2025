@@ -1,149 +1,265 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Graphs with Google Maps</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CanSat Ground Station</title>
 
-    <style>
-        body {
-            position: relative;
-            height: 100vh;
-            background-image: url('spacebackground1.png');
-            background-color: #4c2154;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #header {
-            width: 100%;
-            height: 150px;
-            background-image: url('spacebackground1.png'); /* Adjust path if necessary */
-            background-size: cover;
-            background-position: center;
-        }
-        #status {
-            margin: 20px 0;
-            font-size: 18px;
-            color: white;
-        }
-        .graphs {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .graph-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 1px solid black; 
-            padding: 10px;
-            background: rgb(255, 255, 255);
-            width: 900px; /* Width of the container */
-            height: 400px; /* Height of the container */
-            overflow-x: auto; /* Allow horizontal scrolling */
-            overflow-y: hidden; /* Hide vertical scrolling */
-            position: relative; /* Position relative to control scrollbar */
-        }
-        canvas {
-            width: 2000px; /* Larger width than container to enable scrolling */
-            height: 100%; /* Adjust height if needed */
-        }
-        .graph-title {
-            margin-bottom: 10px;
-        }
-        #descentGraph {
-            width: 600px; 
-            height: 600px;
-            margin-top: 20px;
-        }
-        #gyroCanvas {
-            width: 600px;
-            height: 600px;
-            margin-top: 20px;
-        }
-        #map {
-            width: 600px;
-            height: 600px;
-            margin-top: 20px;
-        }
-        #manualInput {
-            margin-top: 20px;
-        }
-        textarea {
-            width: 100%;
-        }
-    </style>
+  <!-- Core libs (load once) -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="/liveGraph/googleMaps.js"></script>
+
+  <style>
+    :root{
+      --bg:#0b0f1a; --panel:#121826; --muted:#8ea0b3; --text:#e8eef6;
+      --gap:12px; --radius:14px; --hdr:64px;
+      --ok:#22c55e; --warn:#f59e0b; --err:#ef4444; --card-border:#243043;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 80% -10%, rgba(76,201,240,.08), transparent),
+        radial-gradient(1000px 700px at -10% 20%, rgba(247,37,133,.06), transparent),
+        var(--bg);
+      font:14px system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      display:flex; flex-direction:column; min-height:100vh;
+      overflow:hidden;          /* page doesn’t scroll, the grid fits the viewport */
+    }
+
+    /* Header */
+    header{
+      height:var(--hdr);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 16px; border-bottom:1px solid #1f2937; backdrop-filter: blur(6px);
+      flex:0 0 auto;
+    }
+    .brand{display:flex; align-items:center; gap:10px}
+    .brand-logo{height:40px; width:auto; object-fit:contain}
+    .brand h1{margin:0; font-size:18px; letter-spacing:.3px}
+    .chip{padding:3px 8px; border-radius:999px; background:#1f2937; color:var(--muted); font-size:11px}
+    .status{display:flex; align-items:center; gap:8px}
+    .dot{width:9px; height:9px; border-radius:50%; background:var(--warn); box-shadow:0 0 8px var(--warn)}
+    .dot.online{background:var(--ok); box-shadow:0 0 10px var(--ok)}
+    .dot.offline{background:var(--err); box-shadow:0 0 10px var(--err)}
+
+    /* Main two-column grid */
+    main{
+      height: calc(100vh - var(--hdr));
+      padding: var(--gap);
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+    }
+    @media (max-width:1100px){ main{grid-template-columns:1fr} }
+
+    /* Card */
+    .card{
+      background:var(--panel); border:1px solid var(--card-border);
+      border-radius:var(--radius); min-height:0; overflow:hidden;
+    }
+    .card .body{padding:10px; height:100%; display:flex; flex-direction:column; gap:10px; min-height:0}
+
+    .left {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+      min-height: 0;
+    }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+    }
+    .stat {
+      flex: 1 1 150px;            /* allow slightly wider stat blocks */
+      min-width: 140px;
+      max-width: 180px;           /* caps the width to prevent big gaps */
+      background: #0f1626;
+      border: 1px solid #233148;
+      border-radius: 10px;
+      padding: 6px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500;
+      margin-bottom: 2px;
+      letter-spacing: 0.3px;
+    }
+    .val {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .lower-layout {
+      display: flex;
+      flex-direction: row;
+      gap: var(--gap);
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .charts {
+      flex: 1.25;
+      display: grid;
+      gap: var(--gap);
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: repeat(2, minmax(200px, 1fr));
+      min-height: 0;
+    }
+    .charts h3 { margin: 0; color: #8ea0b3 }
+    .charts .card { display: flex; min-height: 0 }
+    .charts .body { flex: 1 1 auto; min-height: 0 }
+    .charts canvas { width: 100% !important; height: 100% !important; display: block }
+
+    .right-panel {
+      flex: 0.9;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .right-panel .body {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      height: 100%;
+    }
+
+    .right-panel .half-block {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 0;
+    }
+
+    .half-block .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    #gyroCanvas,
+    #map {
+      flex: 1;
+      width: 100%;
+      background: #0f1626;
+      border: 1px solid #233148;
+      border-radius: 10px;
+      min-height: 0;
+    }
+    /* Hide the unused Plotly element if present */
+    #descentGraph{display:none; width:0; height:0; overflow:hidden}
+  </style>
 </head>
+
 <body>
-    <div id="header"></div>
-    <div id="status">
-        <p id="current-date">Date: </p>
-        <p id="current-time">Time: </p>
-        <p>Status: On-flight</p>
-        <p id="status-latitude">Latitude: 38.2323°</p>
-        <p id="status-longitude">Longitude: 24.067°</p>
-        <p id="status-temperature">Temperature: 28.04°C</p>
-        <p id="status-height">Height: 706m</p>
-        <p id="status-pressure">Pressure: 973hPa</p>
+  <header>
+    <div class="brand">
+      <img class="brand-logo" src="Cansat/public/assets/LOGO_UPNM.png" alt="UPNM Logo">
+      <h1>CanSat Ground Station</h1>
+      <span class="chip" id="modeChip">Mode: Live</span>
     </div>
-    <div class="graphs">
-        <div class="graph-container">
-            <div class="graph-title">Temperature</div>
-            <canvas id="liveGraphTemp"></canvas>
-        </div>
-        <div class="graph-container">
-            <div class="graph-title">Altitude</div>
-            <canvas id="liveGraphAltitude"></canvas>
-        </div>
-        <div class="graph-container">
-            <div class="graph-title">Pressure</div>
-            <canvas id="liveGraphPressure"></canvas>
-        </div>
-        <div class="graph-container">
-            <div class="graph-title">Velocity</div>
-            <canvas id="liveGraphVelocity"></canvas>
-        </div>
-        <!-- Descent Graph container -->
-        <div id="descentGraph"></div>
+    <div class="status">
+      <div class="dot offline" id="connDot"></div>
+      <span id="connText">Disconnected</span>
+    </div>
+  </header>
 
-        <!-- Gyroscope Visualization -->
-        <canvas id="gyroCanvas"></canvas>
-
-        <!-- Map container -->
-        <div id="map"></div>
+  <main>
+      <!-- Full-width stats row -->
+    <div class="card">
+      <div class="body">
+        <div class="stats">
+          <div class="stat"><div class="label">Date</div><div class="val" id="status-date">—</div></div>
+          <div class="stat"><div class="label">Time</div><div class="val" id="status-time">—</div></div>
+          <div class="stat"><div class="label">Latitude</div><div class="val" id="status-latitude">—</div></div>
+          <div class="stat"><div class="label">Longitude</div><div class="val" id="status-longitude">—</div></div>
+          <div class="stat"><div class="label">Temperature</div><div class="val" id="status-temperature">—</div></div>
+          <div class="stat"><div class="label">Height</div><div class="val" id="status-height">—</div></div>
+          <div class="stat"><div class="label">Pressure</div><div class="val" id="status-pressure">—</div></div>
+          <div class="stat"><div class="label">Vertical Speed</div><div class="val" id="status-vz">—</div></div>
+<div class="stat"><div class="label">Satellites</div><div class="val" id="status-satcount">—</div></div>
+<div class="stat"><div class="label">HDOP</div><div class="val" id="status-hdop">—</div></div>
+        </div>
+      </div>
     </div>
 
-    <!-- Include Chart.js, Plotly.js, and other scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist/plotly.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.6.1/dist/socket.io.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Chart + RightPanel -->
+    <div class="lower-layout">
+      <!-- Left: Charts -->
+      <section class="charts">
+        <div class="card"><div class="body"><h3>Temperature (°C)</h3><canvas id="liveGraphTemp"></canvas></div></div>
+        <div class="card"><div class="body"><h3>Altitude (m)</h3><canvas id="liveGraphAltitude"></canvas></div></div>
+        <div class="card"><div class="body"><h3>Pressure (Pa)</h3><canvas id="liveGraphPressure"></canvas></div></div>
+        <div class="card"><div class="body"><h3>Acceleration (m/s²)</h3><canvas id="liveGraphAccel"></canvas></div></div>
+      </section>
 
-    <script src="graphs.js"></script>
-    <script src="googleMaps.js"></script>
+      <!-- Right: 3D + Map -->
+      <section class="card right-panel">
+        <div class="body">
+          <div class="half-block">
+            <h3 style="margin:0;color:#8ea0b3">3D Model</h3>
+            <div class="content"><canvas id="gyroCanvas"></canvas></div>
+          </div>
+          <div class="half-block">
+            <h3 style="margin:10px 0 0;color:#8ea0b3">GPS Map</h3>
+            <div class="content"><div id="map"></div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
 
-    <script>
-        function updateDateTime() {
-            const dateElement = document.getElementById('current-date');
-            const timeElement = document.getElementById('current-time');
-            
-            const now = new Date();
-            const date = now.toLocaleDateString();
-            const time = now.toLocaleTimeString();
+  <script>
+  (function () {
+    const dateEl = document.getElementById('status-date');
+    const timeEl = document.getElementById('status-time');
+    let lastTelemetryMs = 0;
 
-            dateElement.textContent = `Date: ${date}`;
-            timeElement.textContent = `Time: ${time}`;
-        }
+    // graphs.js will call this whenever a telemetry packet is processed
+    window.__markTelemetry = function () { lastTelemetryMs = Date.now(); };
 
-        // Update the date and time every second
-        setInterval(updateDateTime, 1000);
+    function tick() {
+      if (!dateEl || !timeEl) return;
+      // Only show the local clock if telemetry hasn't updated for 5s
+      const stale = Date.now() - lastTelemetryMs > 5000;
+      if (stale) {
+        const now = new Date();
+        dateEl.textContent = now.toLocaleDateString();
+        timeEl.textContent = now.toLocaleTimeString();
+      }
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+  </script>
+  
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
 
-        // Initial call to display the date and time immediately
-        updateDateTime();
-    </script>
+  <!-- App logic last -->
+  <script src="graphs.js"></script>
+  <script src="/liveGraph/gyro3D.js"></script>
+
 </body>
 </html>

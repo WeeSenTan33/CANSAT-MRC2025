@@ -1,222 +1,159 @@
-// Establish WebSocket connection for the serial data
-const socket = io();
+// ===== Global Chart.js defaults =====
+Chart.defaults.responsive = true;
+Chart.defaults.maintainAspectRatio = false;
 
-// Function to create Chart.js graphs with fixed size and scrollable feature
-const createChart = (ctx, label, yAxisLabel) => {
-    return new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: label,
-                borderColor: 'rgb(128, 0, 128)', // Purple border color
-                backgroundColor: 'rgba(128, 0, 128, 0.2)', // Purple background color
-                data: [],
-                fill: false,
-                tension: 0.1
-            }]
-        },
-        options: {
-            scales: {
-                x: {
-                    type: 'linear',
-                    position: 'bottom',
-                    title: {
-                        display: true,
-                        text: 'Time (s)' // Display time in seconds
-                    },
-                    ticks: {
-                        stepSize: 1, // Display every 1 second
-                        callback: function(value) {
-                            return Math.floor(value); // Display as an integer with no decimal place
-                        }
-                    }
-                },
-                y: {
-                    beginAtZero: false,
-                    title: {
-                        display: true,
-                        text: yAxisLabel
-                    }
-                }
-            },
-            animation: {
-                duration: 0
-            },
-            plugins: {
-                title: {
-                    display: true,
-                    text: label
-                }
-            }
-        }
-    });
-};
+// ===== Socket.IO (single instance, explicit URL) =====
+const socket = io('http://localhost:3000', { transports: ['websocket', 'polling'] });
+socket.on('connect',      () => console.log('socket.io connected'));
+socket.on('connect_error',err => console.warn('socket.io error:', err?.message));
 
-// Create charts
-const tempChart = createChart(document.getElementById('liveGraphTemp').getContext('2d'), 'Temperature', '°C');
-const altitudeChart = createChart(document.getElementById('liveGraphAltitude').getContext('2d'), 'Altitude', 'm');
-const pressureChart = createChart(document.getElementById('liveGraphPressure').getContext('2d'), 'Pressure', 'hPa');
-const velocityChart = createChart(document.getElementById('liveGraphVelocity').getContext('2d'), 'Velocity', 'km/h');
+// ===== Connection status indicator =====
+const connDot  = document.getElementById('connDot');
+const connText = document.getElementById('connText');
 
-// Create the descent path 3D graph using Plotly.js
-const createDescentGraph = () => {
-    const layout = {
-        width: 600,
-        height: 600,
-        title: 'Descent Path (gx, gy, gz)',
-        scene: {
-            xaxis: { 
-                title: 'gx (rad/s)',
-                range: [-70, 70] // Initial range for gx axis
-            },
-            yaxis: { 
-                title: 'gy (rad/s)',
-                range: [-70, 70] // Initial range for gy axis
-            },
-            zaxis: { 
-                title: 'gz (rad/s)',
-                range: [-70, 70] // Initial range for gz axis
-            }
-        }
-    };
-    Plotly.newPlot('descentGraph', [{
-        type: 'scatter3d',
-        mode: 'lines',
-        line: { color: 'rgb(128, 0, 128)', width: 4 }, // Purple line color
-        x: [], // gx values
-        y: [], // gy values
-        z: []  // gz values
-    }], layout);
-};
-
-createDescentGraph();
-
-// Create the gyroscope visualization using Three.js
-const createGyroVisualization = () => {
-    // Set up the scene, camera, and renderer
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, 600 / 600, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gyroCanvas') });
-    renderer.setSize(600, 600);
-
-    // Create a cylinder geometry
-    const geometry = new THREE.CylinderGeometry(1, 1, 2, 32);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cylinder = new THREE.Mesh(geometry, material);
-    scene.add(cylinder);
-
-    // Position the camera
-    camera.position.z = 5;
-
-    // Render loop
-    const animate = function () {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-    };
-    animate();
-
-    // Function to update cylinder rotation based on gyroscope data
-    return (gx, gy, gz) => {
-        cylinder.rotation.x = gx; // gx represents rotation around x-axis
-        cylinder.rotation.y = gy; // gy represents rotation around y-axis
-        cylinder.rotation.z = gz -0.95; // gz represents rotation around z-axis
-    };
-};
-
-const updateGyro = createGyroVisualization();
-
-// Helper function to update the y-axis range of a chart
-const updateYAxisRange = (chart, newValue) => {
-    const dataValues = chart.data.datasets[0].data.map(d => d.y);
-    const min = Math.min(...dataValues, newValue) - 10;
-    const max = Math.max(...dataValues, newValue) + 10;
-    chart.options.scales.y.min = min;
-    chart.options.scales.y.max = max;
-    chart.update();
-};
-
-// Function to update all graphs and status display with new data
-function updateGraphs(data) {
-    const now = Date.now();
-    const {
-        temp, altitude, pressure, lat, log, num_satellites, speed,
-        gx, gy, gz, orientation_upward, ax, ay, az, acceleration
-    } = data;
-
-    // Convert timestamp to seconds
-    const secondsElapsed = Math.floor(now / 1000);
-
-    // Update the status display
-    document.getElementById('status-latitude').textContent = `Latitude: ${lat}°`;
-    document.getElementById('status-longitude').textContent = `Longitude: ${log}°`;
-    document.getElementById('status-temperature').textContent = `Temperature: ${temp}°C`;
-    document.getElementById('status-height').textContent = `Height: ${altitude}m`;
-    document.getElementById('status-pressure').textContent = `Pressure: ${pressure}hPa`;
-
-    // Update the charts
-    tempChart.data.labels.push(secondsElapsed);
-    tempChart.data.datasets[0].data.push({ x: secondsElapsed, y: temp });
-    updateYAxisRange(tempChart, temp);
-
-    altitudeChart.data.labels.push(secondsElapsed);
-    altitudeChart.data.datasets[0].data.push({ x: secondsElapsed, y: altitude });
-    updateYAxisRange(altitudeChart, altitude);
-
-    pressureChart.data.labels.push(secondsElapsed);
-    pressureChart.data.datasets[0].data.push({ x: secondsElapsed, y: pressure });
-    updateYAxisRange(pressureChart, pressure);
-
-    velocityChart.data.labels.push(secondsElapsed);
-    velocityChart.data.datasets[0].data.push({ x: secondsElapsed, y: speed });
-    updateYAxisRange(velocityChart, speed);
-
-    // Update descent graph with gx, gy, and gz data
-    const descentGraph = document.getElementById('descentGraph');
-    if (descentGraph) {
-        Plotly.extendTraces('descentGraph', {
-            x: [[gx]],
-            y: [[gy]],
-            z: [[gz]]
-        }, [0]);
-
-        // Update the range for the descent graph
-        const xRange = [Math.min(...Plotly.Plots.getTraces('descentGraph')[0].x), Math.max(...Plotly.Plots.getTraces('descentGraph')[0].x)];
-        const yRange = [Math.min(...Plotly.Plots.getTraces('descentGraph')[0].y), Math.max(...Plotly.Plots.getTraces('descentGraph')[0].y)];
-        const zRange = [Math.min(...Plotly.Plots.getTraces('descentGraph')[0].z), Math.max(...Plotly.Plots.getTraces('descentGraph')[0].z)];
-
-        Plotly.relayout('descentGraph', {
-            'scene.xaxis.range': [xRange[0] - 10, xRange[1] + 10],
-            'scene.yaxis.range': [yRange[0] - 10, yRange[1] + 10],
-            'scene.zaxis.range': [zRange[0] - 10, zRange[1] + 10],
-        });
-    } else {
-        console.error('Descent graph not found.');
-    }
-
-    // Update gyroscope visualization
-    updateGyro(gx, gy, gz);
-
-    // Update Google Maps
-    updateMap(lat, log);
+function setConnectedUI(isConnected) {
+  if (!connDot || !connText) return;
+  connDot.classList.remove('offline', 'online');
+  connDot.classList.add(isConnected ? 'online' : 'offline');
+  connText.textContent = isConnected ? 'Connected' : 'Disconnected';
 }
 
-// Handle incoming data from the WebSocket connection for serial data
-socket.on('serialData', function(data) {
-    updateGraphs(data);
-});
+socket.on('connect',      () => setConnectedUI(true));
+socket.on('disconnect',   () => setConnectedUI(false));
+socket.on('connect_error',() => setConnectedUI(false));
 
-// WebSocket connection for the gyroscope data from Python server
-const gyroSocket = new WebSocket('ws://localhost:5678');
+// ===== X-axis in seconds since first packet =====
+const MAX_POINTS = 600;
+let t0Sec = null;
+function relSeconds() {
+  const s = performance.now() / 1000;
+  if (t0Sec === null) t0Sec = s;
+  return +(s - t0Sec).toFixed(1);
+}
 
-gyroSocket.onmessage = function(event) {
-    const data = JSON.parse(event.data);
-    console.log('Gyro Data from Python:', data);
-
-    // Update the gyroscope visualization with received data
-    updateGyro(data.gx, data.gy, data.gz);
+const two = v => {
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.round(n * 100) / 100 : null;
 };
 
-gyroSocket.onerror = function(error) {
-    console.error('WebSocket Error:', error);
-};
+function createTimeChart(canvasEl, label, yAxisLabel) {
+  if (!canvasEl) return null;
+  return new Chart(canvasEl, {
+    type: 'line',
+    data: { datasets: [{
+      label, data: [], borderWidth: 1.6, pointRadius: 0, tension: 0.1,
+      borderColor: 'rgba(232, 225, 232, 1)',
+      backgroundColor: 'rgba(128, 0, 128, 0.2)', fill: false
+    }]},
+    options: {
+      parsing: false, normalized: true, animation: { duration: 0 }, responsive: true,
+      maintainAspectRatio: false, layout: { padding: { bottom: 18 } },
+      scales: {
+        x: { type: 'linear', title: { display: true, text: 'Time (s)' },
+             ticks: { autoSkip: true, maxTicksLimit: 8, callback: v => Math.floor(v) } },
+        y: { beginAtZero: false, title: { display: false, text: yAxisLabel },
+             ticks: { callback: v => Number(v).toFixed(2) } }
+      },
+      plugins: { title: { display: false, text: label }, legend: { display: false } }
+    }
+  });
+}
+
+function pushPoint(chart, yVal) {
+  if (!chart || yVal == null) return;
+  const ds = chart.data.datasets[0];
+  ds.data.push({ x: relSeconds(), y: two(yVal) });
+  if (ds.data.length > MAX_POINTS) ds.data.shift();
+  chart.update('none');
+}
+
+// ===== Create charts =====
+const tempChart     = createTimeChart(document.getElementById('liveGraphTemp'),      'Temperature', '°C');
+const altitudeChart = createTimeChart(document.getElementById('liveGraphAltitude'),  'Altitude',    'm');
+const pressureChart = createTimeChart(document.getElementById('liveGraphPressure'),  'Pressure',    'Pa');
+const accelChart    = createTimeChart(document.getElementById('liveGraphAccel'),     'Acceleration', 'm/s²');
+
+// ===== Map updater (Leaflet) =====
+let pendingPos = null;
+function tryUpdateMap(lat, lng) {
+  if (typeof window.updateMap === 'function') {
+    window.updateMap(lat, lng);
+  } else {
+    pendingPos = [lat, lng];
+  }
+}
+setInterval(() => {
+  if (pendingPos && typeof window.updateMap === 'function') {
+    const [la, ln] = pendingPos; pendingPos = null; window.updateMap(la, ln);
+  }
+}, 500);
+
+// ===== Telemetry handler =====
+function updateGraphs(data) {
+  if (typeof window.__markTelemetry === 'function') window.__markTelemetry();
+
+  const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+  if (data.date) setText('status-date', String(data.date));
+  if (data.time) setText('status-time', String(data.time));
+
+  const lat = data.latitude ?? data.lat;
+  const lng = data.longitude ?? data.log;
+  if (lat != null) setText('status-latitude',  `${Number(lat).toFixed(6)}°`);
+  if (lng != null) setText('status-longitude', `${Number(lng).toFixed(6)}°`);
+
+  if (data.temp     != null) setText('status-temperature', `${Number(data.temp).toFixed(2)}°C`);
+  if (data.altitude != null) setText('status-height',      `${Math.round(Number(data.altitude))} m`);
+  if (data.pressure != null) setText('status-pressure',    `${Math.round(Number(data.pressure))} Pa`);
+  if (data.vz         != null) setText('status-vz', `${Number(data.vz).toFixed(2)} m/s`);
+  const satVal = data.satellites ?? data.sat;
+  const satCount = document.getElementById('status-satcount');
+  if (satCount && satVal != null && satVal >= 0) {
+    satCount.textContent = satVal;
+    satCount.style.color = satVal < 4 ? 'var(--err)' : 'var(--ok)';
+  } else if (satCount) {
+    satCount.textContent = '—';
+    satCount.style.color = 'var(--muted)';
+  }
+  
+  const hdop = document.getElementById('status-hdop');
+  if (data.hdop != null) {
+    const value = Number(data.hdop);
+    hdop.textContent = value.toFixed(1);
+    hdop.style.color = value > 2.5 ? 'var(--err)' : 'var(--ok)';
+  }
+
+  if (data.temp     != null) pushPoint(tempChart,     data.temp);
+  if (data.altitude != null) pushPoint(altitudeChart, data.altitude);
+  if (data.pressure != null) pushPoint(pressureChart, data.pressure);
+
+  if (data.ax != null && data.ay != null && data.az != null) {
+    const magnitude = Math.sqrt(data.ax**2 + data.ay**2 + data.az**2);
+    pushPoint(accelChart, magnitude);
+  } else {
+    console.warn('[missing accel]', data);
+  }
+
+  if (lat != null && lng != null) tryUpdateMap(Number(lat), Number(lng));
+
+  function update3DModel(data) {
+    if (!window.cylinder || !data) return;
+
+    const roll  = Number(data.gx || 0);  // rotation around Z
+    const pitch = Number(data.gy || 0);  // rotation around X
+    const yaw   = Number(data.gz || 0);  // rotation around Y
+
+    // Convert degrees to radians for Babylon.js
+    window.cylinder.rotation.x = pitch * Math.PI / 180;
+    window.cylinder.rotation.y = -yaw   * Math.PI / 180;
+    window.cylinder.rotation.z = roll  * Math.PI / 180;
+  }
+
+  if (typeof update3DModel === 'function') {
+    update3DModel(data);
+  }
+
+}
+
+// ===== Wire socket → graphs =====
+socket.on('serialData', updateGraphs);

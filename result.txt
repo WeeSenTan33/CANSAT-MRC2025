@@ -1,0 +1,273 @@
+
+> ppe-mastery@1.0.0 start
+> node server.js
+
+✅ UI: http://localhost:3000
+🔎 Auto-selected COM10
+🔌 Serial: COM10 @ 9600
+⚠️  Close the Arduino Serial Monitor (only one app can open the port).
+RAW: ---------------------------
+RAW: -1.221,"gy":4.761,"gz":0.305,"ax":-0.102,"ay":0.037,"az":-0.922,"vz":-0.04,"sat":26,"hdop":0.50}
+RAW: ----------------------------
+RAW: -1.221,"gy":4.761,"gz":0.305,"ax":-0.102,"ay":0.037,"az":-0.922,"vz":-0.04,"sat":26,"hdop":0.50}
+RAW: ----------------------------
+RAW: -1.221,"gy":4.761,"gz":0.305,"ax":-0.102,"ay":0.037,"az":-0.922,"vz":-0.04,"sat":26,"hdop":0.50}
+RAW: ----------------------------
+RAW: 📡 UNO Receiver Ready - Listening on D10
+RAW: ⚠️ Low Signal Warning:
+RAW: :-0.916,"vz":0.05,"sat":26,"hdop":0.50}
+RAW: ----------------------------
+RAW: ✅ Data Received:
+RAW: {"callsign":"AEROBOLT","date":"2025-09-03","time":"09:14:34","latitude":4.080324,"longitude":100.864089,"temp":28.74,"pressure":101293,"altitude":2.70,"acceleration":0.921,"gx":-6.042,"gy":0.854,"gz":-2.197,"ax":-0.045,"ay":0.001,"az":-0.920,"vz":0.04,"sat":26,"hdop":0.50}
+→ {
+  callsign: 'AEROBOLT',
+  date: '2025-09-03',
+  time: '09:14:34',
+  latitude: 4.080324,
+  longitude: 100.864089,
+  temp: 28.74,
+  pressure: 101293,
+  altitude: 2.7,
+  acceleration: 0.921,
+  gx: -6.042,
+  gy: 0.854,
+  gz: -2.197,
+  ax: -0.045,
+  ay: 0.001,
+  az: -0.92,
+  vz: 0.04,
+  sat: 26,
+  hdop: 0.5
+}
+RAW: ----------------------------
+RAW: ✅ Data Received:
+RAW: {"callsign":"AEROBOLT","date":"2025-09-03","time":"09:14:34","latitude":4.080324,"longitude":100.864089,"temp":28.75,"pressure":101293,"altitude":2.68,"acceleration":0.919,"gx":-8.728,"gy":11.597,"gz":0.000,"ax":-0.043,"ay":-0.010,"az":-0.918,"vz":-0.02,"sat":26,"hdop":0.50}
+→ {
+  callsign: 'AEROBOLT',
+  date: '2025-09-03',
+  time: '09:14:34',
+  latitude: 4.080324,
+  longitude: 100.864089,
+  temp: 28.75,
+  pressure: 101293,
+  altitude: 2.68,
+  acceleration: 0.919,
+  gx: -8.728,
+  gy: 11.597,
+  gz: 0,
+  ax: -0.043,
+  ay: -0.01,
+  az: -0.918,
+  vz: -0.02,
+  sat: 26,
+  hdop: 0.5
+}
+RAW: ----------------------------
+RAW: ✅ Data Received:
+RAW: {"callsign":"AEROBOLT","date":"2025-09-03","time":"09:14:40","latitude":4.080326,"longitude":100.864089,"temp":28.77,"pressure":101293,"altitude":2.65,"acceleration":0.924,"gx":-10.986,"gy":11.597,"gz":-2.319,"ax":-0.026,"ay":0.008,"az":-0.923,"vz":-0.03,"sat":26,"hdop":0.50}
+→ {
+  callsign: 'AEROBOLT',
+  date: '2025-09-03',
+  time: '09:14:40',
+  latitude: 4.080326,
+  longitude: 100.864089,
+  temp: 28.77,
+  pressure: 101293,
+  altitude: 2.65,
+  acceleration: 0.924,
+  gx: -10.986,
+  gy: 11.597,
+  gz: -2.319,
+  ax: -0.026,
+  ay: 0.008,
+  az: -0.923,
+  vz: -0.03,
+  sat: 26,
+  hdop: 0.5
+}
+RAW: ----------------------------
+RAW: ✅ Data Received:
+RAW: {"callsign":"AEROBOLT","date":"2025-09-03","time":"09:14:40","latitude":4.080326,"longitude":100.864089,"temp":28.78,"pressure":101293,"altitude":2.65,"acceleration":0.943,"gx":-5.005,"gy":3.906,"gz":-2.625,"ax":-0.118,"ay":-0.009,"az":-0.936,"vz":-0.00,"sat":26,"hdop":0.50}
+→ {
+  callsign: 'AEROBOLT',
+  date: '2025-09-03',
+  time: '09:14:40',
+  latitude: 4.080326,
+  longitude: 100.864089,
+  temp: 28.78,
+  pressure: 101293,
+  altitude: 2.65,
+  acceleration: 0.943,
+  gx: -5.005,
+  gy: 3.906,
+  gz: -2.625,
+  ax: -0.118,
+  ay: -0.009,
+  az: -0.936,
+  vz: -0,
+  sat: 26,
+  hdop: 0.5
+}
+RAW: ----------------------------
+RAW: ✅ Data Received:
+RAW: {"callsign":"AEROBOLT","date":"2025-09-03","time":"09:14:42","latitude":4.080326,"longitude":100.864089,"temp":28.79,"pressure":101293,"altitude":2.61,"acceleration":0.917,"gx":10.681,"gy":29.602,"gz":-19.165,"ax":-0.267,"ay":-0.128,"az":-0.868,"vz":-0.04,"sat":26,"hdop":0.50}
+→ {
+  callsign: 'AEROBOLT',
+  date: '2025-09-03',
+  time: '09:14:42',
+  latitude: 4.080326,
+  longitude: 100.864089,
+  temp: 28.79,
+  pressure: 101293,
+  altitude: 2.61,
+  acceleration: 0.917,
+  gx: 10.681,
+  gy: 29.602,
+  gz: -19.165,
+  ax: -0.267,
+  ay: -0.128,
+  az: -0.868,
+  vz: -0.04,
+  sat: 26,
+  hdop: 0.5
+}
+RAW: ----------------------------
+RAW: ✅ Data Received:
+RAW: {"callsign":"AEROBOLT","date":"2025-09-03","time":"09:14:42","latitude":4.080326,"longitude":100.864089,"temp":28.81,"pressure":101294,"altitude":2.62,"acceleration":1.003,"gx":-18.860,"gy":2.197,"gz":-4.395,"ax":-0.082,"ay":-0.155,"az":-0.987,"vz":0.01,"sat":26,"hdop":0.50}
+→ {
+  callsign: 'AEROBOLT',
+  date: '2025-09-03',
+  time: '09:14:42',
+  latitude: 4.080326,
+  longitude: 100.864089,
+  temp: 28.81,
+  pressure: 101294,
+  altitude: 2.62,
+  acceleration: 1.003,
+  gx: -18.86,
+  gy: 2.197,
+  gz: -4.395,
+  ax: -0.082,
+  ay: -0.155,
+  az: -0.987,
+  vz: 0.01,
+  sat: 26,
+  hdop: 0.5
+}
+RAW: ----------------------------
+RAW: ✅ Data Received:
+RAW: {"callsign":"AEROBOLT","date":"2025-09-03","time":"09:14:42","latitude":4.080326,"longitude":100.864089,"temp":28.82,"pressure":101293,"altitude":2.63,"acceleration":0.940,"gx":-5.981,"gy":1.587,"gz":0.427,"ax":-0.229,"ay":-0.128,"az":-0.902,"vz":0.01,"sat":26,"hdop":0.50}
+→ {
+  callsign: 'AEROBOLT',
+  date: '2025-09-03',
+  time: '09:14:42',
+  latitude: 4.080326,
+  longitude: 100.864089,
+  temp: 28.82,
+  pressure: 101293,
+  altitude: 2.63,
+  acceleration: 0.94,
+  gx: -5.981,
+  gy: 1.587,
+  gz: 0.427,
+  ax: -0.229,
+  ay: -0.128,
+  az: -0.902,
+  vz: 0.01,
+  sat: 26,
+  hdop: 0.5
+}
+RAW: ----------------------------
+RAW: ✅ Data Received:
+RAW: {"callsign":"AEROBOLT","date":"2025-09-03","time":"09:14:42","latitude":4.080326,"longitude":100.864089,"temp":28.83,"pressure":101294,"altitude":2.61,"acceleration":0.989,"gx":3.418,"gy":-5.554,"gz":-10.376,"ax":-0.270,"ay":-0.133,"az":-0.942,"vz":-0.02,"sat":26,"hdop":0.50}
+→ {
+  callsign: 'AEROBOLT',
+  date: '2025-09-03',
+  time: '09:14:42',
+  latitude: 4.080326,
+  longitude: 100.864089,
+  temp: 28.83,
+  pressure: 101294,
+  altitude: 2.61,
+  acceleration: 0.989,
+  gx: 3.418,
+  gy: -5.554,
+  gz: -10.376,
+  ax: -0.27,
+  ay: -0.133,
+  az: -0.942,
+  vz: -0.02,
+  sat: 26,
+  hdop: 0.5
+}
+RAW: ----------------------------
+RAW: ✅ Data Received:
+RAW: {"callsign":"AEROBOLT","date":"2025-09-03","time":"09:14:42","latitude":4.080326,"longitude":100.864089,"temp":28.85,"pressure":101293,"altitude":2.64,"acceleration":0.920,"gx":5.554,"gy":2.808,"gz":-12.512,"ax":-0.132,"ay":-0.207,"az":-0.886,"vz":0.04,"sat":26,"hdop":0.50}
+→ {
+  callsign: 'AEROBOLT',
+  date: '2025-09-03',
+  time: '09:14:42',
+  latitude: 4.080326,
+  longitude: 100.864089,
+  temp: 28.85,
+  pressure: 101293,
+  altitude: 2.64,
+  acceleration: 0.92,
+  gx: 5.554,
+  gy: 2.808,
+  gz: -12.512,
+  ax: -0.132,
+  ay: -0.207,
+  az: -0.886,
+  vz: 0.04,
+  sat: 26,
+  hdop: 0.5
+}
+RAW: ----------------------------
+RAW: ✅ Data Received:
+RAW: {"callsign":"AEROBOLT","date":"2025-09-03","time":"09:14:48","latitude":4.080326,"longitude":100.864089,"temp":28.86,"pressure":101293,"altitude":2.63,"acceleration":0.912,"gx":28.564,"gy":22.522,"gz":-9.521,"ax":-0.139,"ay":-0.117,"az":-0.894,"vz":-0.02,"sat":26,"hdop":0.50}
+→ {
+  callsign: 'AEROBOLT',
+  date: '2025-09-03',
+  time: '09:14:48',
+  latitude: 4.080326,
+  longitude: 100.864089,
+  temp: 28.86,
+  pressure: 101293,
+  altitude: 2.63,
+  acceleration: 0.912,
+  gx: 28.564,
+  gy: 22.522,
+  gz: -9.521,
+  ax: -0.139,
+  ay: -0.117,
+  az: -0.894,
+  vz: -0.02,
+  sat: 26,
+  hdop: 0.5
+}
+RAW: ----------------------------
+RAW: ✅ Data Received:
+RAW: {"callsign":"AEROBOLT","date":"2025-09-03","time":"09:14:48","latitude":4.080326,"longitude":100.864089,"temp":28.88,"pressure":101294,"altitude":2.60,"acceleration":0.930,"gx":-2.991,"gy":11.719,"gz":2.319,"ax":-0.185,"ay":-0.081,"az":-0.908,"vz":-0.02,"sat":26,"hdop":0.50}
+→ {
+  callsign: 'AEROBOLT',
+  date: '2025-09-03',
+  time: '09:14:48',
+  latitude: 4.080326,
+  longitude: 100.864089,
+  temp: 28.88,
+  pressure: 101294,
+  altitude: 2.6,
+  acceleration: 0.93,
+  gx: -2.991,
+  gy: 11.719,
+  gz: 2.319,
+  ax: -0.185,
+  ay: -0.081,
+  az: -0.908,
+  vz: -0.02,
+  sat: 26,
+  hdop: 0.5
+}
+RAW: ----------------------------
+Terminate batch job (Y/N)? 

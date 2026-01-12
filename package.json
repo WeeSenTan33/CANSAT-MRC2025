@@ -20,9 +20,10 @@
   "homepage": "https://github.com/Naicker/ppe-mastery#readme",
   "dependencies": {
     "@serialport/parser-readline": "^12.0.0",
-    "express": "^4.19.2",
+    "express": "^4.21.2",
     "phaser": "^3.80.1",
     "serialport": "^12.0.0",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.8.1",
+    "ws": "^8.18.3"
   }
 }
