@@ -1,2 +1,2 @@
-# A Sattelite Data Collection System
+# A Satelite Data Collection System
 
